@@ -1,0 +1,13 @@
+
+
+get ibus settings set by ibus-setup:
+
+	dconf dump /desktop/ibus/ > ibus.dconf
+
+Load the ibus settings:
+
+	dconf load /desktop/ibus/ < ibus.dconf
+
+This settings depend on user.
+
+Settings by im-config is saved in  ~/.xinputrc for user, and for /etc/X11/xinit/xinputrc
