@@ -1,0 +1,16 @@
+[Added Associations]
+x-scheme-handler/http=exo-web-browser.desktop
+x-scheme-handler/https=exo-web-browser.desktop
+x-scheme-handler/mailto=exo-mail-reader.desktop
+text/plain=org.gnome.gedit.desktop;
+application/x-desktop=org.gnome.gedit.desktop;
+text/x-scheme=org.gnome.gedit.desktop;
+application/xml=org.gnome.gedit.desktop;iceweasel.desktop;
+application/x-shellscript=org.gnome.gedit.desktop;
+application/x-compressed-tar=org.gnome.FileRoller.desktop;
+application/x-tar=org.gnome.FileRoller.desktop;
+
+[Default Applications]
+application/x-compressed-tar=org.gnome.FileRoller.desktop
+application/x-tar=org.gnome.FileRoller.desktop
+application/zip=org.gnome.FileRoller.desktop
