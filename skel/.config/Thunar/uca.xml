@@ -1,0 +1,87 @@
+<?xml encoding="UTF-8" version="1.0"?>
+<actions>
+<action>
+	<icon>preferences-system-search-symbolic</icon>
+	<name>Find in this directory</name>
+	<unique-id>1490376906717749-7</unique-id>
+	<command>catfish --path=%f</command>
+	<description>Search for file(s) in this directory and subdirectories</description>
+	<patterns>*</patterns>
+	<directories/>
+</action>
+<action>
+	<icon>emblem-symbolic-link</icon>
+	<name>Create Link</name>
+	<unique-id>1490378322739581-21</unique-id>
+	<command>for f in %F;do  ln -s &quot;$f&quot; &quot;$f.link&quot;; done</command>
+	<description>Create a link here</description>
+	<patterns>*</patterns>
+	<directories/>
+	<audio-files/>
+	<image-files/>
+	<other-files/>
+	<text-files/>
+	<video-files/>
+</action>
+<action>
+	<icon>utilities-terminal</icon>
+	<name>Open Terminal Here</name>
+	<unique-id>1490376289019963-3</unique-id>
+	<command>exo-open --working-directory %f --launch TerminalEmulator</command>
+	<description>Open terminal in this directory</description>
+	<patterns>*</patterns>
+	<startup-notify/>
+	<directories/>
+</action>
+<action>
+	<icon>utilities-root-terminal</icon>
+	<name>Open Root Terminal Here</name>
+	<unique-id>1490378754157946-29</unique-id>
+	<command>gksu -- exo-open --working-directory %f --launch TerminalEmulator</command>
+	<description>Open root terminal in this directory</description>
+	<patterns>*</patterns>
+	<directories/>
+</action>
+<action>
+	<icon>brave</icon>
+	<name>Open as root</name>
+	<unique-id>1490378746125671-28</unique-id>
+	<command>gksu -- thunar %f</command>
+	<description>Open this directory as root</description>
+	<patterns>*</patterns>
+	<directories/>
+</action>
+<action>
+	<icon>rednotebook</icon>
+	<name>Edit as root</name>
+	<unique-id>1490378834447772-30</unique-id>
+	<command>gksu -- gedit %F</command>
+	<description>Edit the selected file(s) as root</description>
+	<patterns>*</patterns>
+	<other-files/>
+	<text-files/>
+</action>
+<action>
+	<icon>xfce4-fsguard-plugin-urgent</icon>
+	<name>Delete as root</name>
+	<unique-id>1490379000987056-32</unique-id>
+	<command>gksu -- rm -r %N</command>
+	<description>Delete file(s) as root</description>
+	<patterns>*</patterns>
+	<directories/>
+	<audio-files/>
+	<image-files/>
+	<other-files/>
+	<text-files/>
+	<video-files/>
+</action>
+<action>
+	<icon>preferences-desktop-wallpaper</icon>
+	<name>Set As Background</name>
+	<unique-id>1490377928475586-19</unique-id>
+	<command>xfconf-query -c xce4-desktop -p /backdrop/screen0/monitor0/image-path -s %f</command>
+	<description>Set this image as the background for this workspace</description>
+	<patterns>*</patterns>
+	<image-files/>
+</action>
+</actions>

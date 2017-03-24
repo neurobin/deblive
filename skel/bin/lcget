@@ -1,0 +1,270 @@
+#!/usr/bin/expect --
+
+#####################################################################
+# Coding conventions:
+# * Error message must start with 'E: ' (and end with 'Abort.' if it 
+#   needs to be aborted).
+#
+#####################################################################
+
+set p_name      "lcget"
+set p_author    "Md. Jahidul Hamid"
+set p_author_eu "jahidulhamid"
+set p_author_ed "yahoo.com"
+set p_version   "0.0.3"
+set p_source    "https://github.com/neurobin/lcget"
+set p_bugt      "$p_source/issues"
+set jssh_link   "https://github.com/neurobin/jssh"
+
+set help "
+#####################################################################
+# Let's Encrypt wrapper to automate the process of completing
+# challenges to get free SSL certificates from Let's Encrypt.
+# ###################################################################
+# Takes same kind of arguments as the letsencrypt command
+# and depends on letsencrypt to run those commands and finally
+# Get the certificates. All this script does is to complete the
+# challenges using ssh login to remote server.
+#
+# Usage:
+#  $p_name \[native and/or letsencrypt options/args]
+# 
+# Native options:
+# 
+#  -lp /path/to/letsencrypt/launcher : If this option is not given
+#       It will assume 'letsencrypt' as the name of the launcher
+#       and it resides in a path in PATH environment
+#       variable in your system.
+#
+#  -jp /path/to/jssh : If this option is not given it will be 
+#       assumed that jssh is in a path in PATH environment
+#       variable in your system i.e 'jssh' command will be 
+#       used by default
+#####################################################################
+"
+
+set verinfo "
+Name:           $p_name
+Version:        $p_version
+Source:         $p_source
+Bug report:     $p_bugt
+Author:         $p_author
+
+Author email:
+    username:   $p_author_eu
+      domain:   $p_author_ed
+"
+
+set err_api_change "
+It seems Let's Encrypt api has gone through some changes.
+Please update this script and if you get this error again,
+then please file a bug report at $p_bugt
+with all available outputs/logs.
+"
+
+
+#####################################################################
+proc get_ssh_command_for_http_challenge {dom cdir cont} {
+    if {$dom == ""} {
+        puts "E: Couldn't parse domain. Abort."
+        exit 1
+    }
+    if {$cdir == ""} {
+        puts "E: Couldn't parse directory name. Abort."
+        exit 1
+    }
+    if {$cont == ""} {
+        puts "E: Couldn't parse content. Abort."
+        exit 1
+    }
+    
+    set comms "echo 'Completing challenge...'
+    if printf '%s' '$cont' > '$cdir'; then
+         echo 'Challenge completed for $dom '
+    else
+         echo 'E: Failed to complete challenge for $dom. Abort.'
+         exit 1
+    fi"
+
+    return "$comms"
+}
+
+#####################################################################
+
+
+set timeout -1
+#exp_internal 1
+
+set program "letsencrypt"
+set ssh_prog "jssh"
+set arguments [lrange $argv 0 end]
+
+#Check for no-args
+if {[llength $argv] == 0} {
+    puts "
+    E: No args passed.
+    Usage: $argv0 subcommand options
+    Example: $argv0 certonly -c /path/to/config/file
+    "
+    exit 1
+}
+
+#$argv 0 can not be empty
+if {[lindex $arguments 0] == "" } {
+    puts "
+    E: Empty argument.
+    Usage: $argv0 subcommand options
+    Example: $argv0 certonly -c /path/to/config/file
+    "
+    exit 1
+}
+
+
+#Check for -lp option. Set the program path 
+for {set var 0} {$var<$argc} {incr var} {
+    if {[lindex $arguments $var] == "-lp" || [lindex $arguments $var] == "--launcher-path"} {
+        if {[lindex $arguments [expr {$var+1}]] != ""} {
+            set program [lindex $arguments [expr {$var+1}]]
+            set arguments [lreplace $arguments $var [expr {$var+1}]]
+        } else {
+            puts "E: Argument missing for option: [lindex $arguments $var]"
+            exit 1
+        }
+    }
+    if {[lindex $arguments $var] == "-jp" || [lindex $arguments $var] == "--jssh-path"} {
+        if {[lindex $arguments [expr {$var+1}]] != ""} {
+            set ssh_prog [lindex $arguments [expr {$var+1}]]
+            set arguments [lreplace $arguments $var [expr {$var+1}]]
+        } else {
+            puts "E: Argument missing for option: [lindex $arguments $var]"
+            exit 1
+        }
+    }
+    if {[lindex $arguments $var] == "-h" || [lindex $arguments $var] == "--help"} {
+        puts "$help"
+    }
+    if {[lindex $arguments $var] == "--version"} {
+        puts "$verinfo"
+    }
+}
+
+if {[catch {spawn -noecho $program --text {*}$arguments}]} {
+    puts "E: Let's Encrypt launcher not found: $program\nYou can specify letsencrypt path with -lp option."
+    exit 1
+}
+
+set letse_spawn $spawn_id
+
+
+while {1} {
+    expect  {
+        #set spawn_id $letse_spawn
+        timeout { exp_send_user "\nE: Failed!!!. Timed out.\n"; exit 1}
+        eof {break}
+        -nocase "*http*.well-known*acme-challenge*http*server*configured*continue" {
+            set output $expect_out(buffer)
+            set found [regexp  {^.*(https?://)([^/]*)/([^[:space:]]*)[^:]*:[[:space:]]*([^[:space:]]*)} $output match protocol domain dir cont]
+            if {$found} {
+                puts "\n\nProtocol: $protocol\nDomain: $domain\nFile: $dir\nContent: $cont\n"
+            } else {
+                puts "\n\nCouldn't get challenge info.$err_api_change\n"
+                exit 1
+            }
+            exp_send_user "Trying to complete challenge for $domain\n\n"
+            set comms [get_ssh_command_for_http_challenge $domain $dir $cont]
+            
+            set timeout 900
+            if {[catch {spawn -noecho $ssh_prog -cdw $domain $comms}]} {
+                puts "E: $ssh_prog command not found.\nIs jssh installed? If not then install it from $jssh_link\nOr if it exists then try giving the path with -jp option."
+                exit 1
+            }
+            
+            set jssh_spawn $spawn_id
+            
+            while {1} {
+                expect  {
+                    timeout { exp_send_user "\nE: Failed!!!. Timed out.\n"; exit 1}
+                    eof {break}
+                    -re "^.\{8,\}$" {#Should be at least 6 in regards of 'ssh: ' for catching unknown prompts
+                        set jssh_output $expect_out(buffer)
+                        #puts $jssh_output
+                        if {[regexp {^.*password.*$} $jssh_output match]} {
+                            stty -echo
+                            exp_send_user -- ""
+                            expect_user -re "(.*)\n"
+                            #exp_send_user "\n"
+                            stty echo
+                            set password $expect_out(1,string)
+                            exp_send "$password\r"
+                        } elseif {[regexp {^E:.*Abort} $jssh_output match]} {
+                            exp_send_user "\nE: Failed to complete challenge for $domain\n"
+                            exit 1
+                        } elseif {[regexp {^.*continue connecting.*[:?][[:space:]]*$} $jssh_output match]} {
+                            exp_send "yes\r"
+                        } elseif {[regexp {^ssh: .*no.*$} $jssh_output match]} {
+                            exp_send_user "\nE: Failed to complete challenge for $domain\n"
+                            exit 1
+                        } elseif {[regexp {^.\{8,\}[:?][[:space:]]*$} $jssh_output match]} {#catching unknown prompts
+                            expect_user -re "(.*)\n"
+                            set password $expect_out(1,string)
+                            exp_send "$password\r"
+                        }
+                    }
+                }
+            }
+            exp_send_user "\nDone for $domain\n"
+            set timeout -1
+            if {[catch {exp_close $jssh_spawn}]} {
+                #spawn was already closed
+            }
+            set spawn_id $letse_spawn
+            exp_send "\r"
+        }
+        -nocase "*password" {
+            stty -echo
+            exp_send_user -- ""
+            expect_user -re "(.*)\n"
+            #exp_send_user "\n"
+            stty echo
+            set password $expect_out(1,string)
+            exp_send "$password\r"
+        }
+        -nocase "*terms of service*\n*:" {
+            exp_send_user -- ""
+            #expect_user -re "(.*)\n"
+            #set password $expect_out(1,string)
+            #exp_send "$password\r"
+            exp_send "a\r"
+            #sending a as the answer
+        }
+        -nocase "*are you ok with your ip being logged\?*:" {
+            exp_send_user -- ""
+            #expect_user -re "(.*)\n"
+            #set password $expect_out(1,string)
+            #exp_send "$password\r"
+            exp_send "y\r"
+            #sending y as the answer
+        }
+        -nocase "*--------------*\n*--------------*:*" {
+            exp_send_user -- ""
+            expect_user -re "(.*)\n"
+            set password $expect_out(1,string)
+            exp_send "$password\r"
+        }
+        -nocase "*--------------*\n*--------------*Press Enter to Continue" {
+            exp_send_user -- ""
+            expect_user -re "(.*)\n"
+            set password $expect_out(1,string)
+            exp_send "$password\r"
+        }
+    }
+}
+
+
+
+#Clearing step, Finally close the spawns
+
+#set spawn_id $letse_spawn
+if {[catch {exp_close}]} {
+#spawn was already closed
+}

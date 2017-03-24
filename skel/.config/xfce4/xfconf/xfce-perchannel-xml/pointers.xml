@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<channel name="pointers" version="1.0">
+  <property name="VirtualBox_USB_Tablet" type="empty">
+    <property name="RightHanded" type="bool" value="true"/>
+    <property name="Threshold" type="int" value="10"/>
+    <property name="Acceleration" type="double" value="5.000000"/>
+  </property>
+  <property name="ImExPS2_Generic_Explorer_Mouse" type="empty">
+    <property name="RightHanded" type="bool" value="true"/>
+    <property name="Threshold" type="int" value="14"/>
+    <property name="Acceleration" type="double" value="5.000000"/>
+  </property>
+</channel>

@@ -1,0 +1,5 @@
+[general]
+engines-order=['xkb:us::eng', 'ibus-avro']
+preload-engines=['xkb:us::eng', 'ibus-avro']
+use-system-keyboard-layout=true
+version='1.5.11'
