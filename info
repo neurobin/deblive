@@ -11,3 +11,5 @@ Load the ibus settings:
 This settings depend on user.
 
 Settings by im-config is saved in  ~/.xinputrc for user, and for /etc/X11/xinit/xinputrc
+
+create a user and run xfce4-panel and then update various settings, copy the .config of this user to /etc/skel

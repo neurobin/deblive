@@ -1,5 +1,5 @@
-favorites=exo-web-browser.desktop,exo-mail-reader.desktop,exo-file-manager.desktop,exo-terminal-emulator.desktop,xfce-settings-manager.desktop,unetbootin.desktop
-recent=org.gnome.gedit.desktop,libreoffice-writer.desktop,synaptic.desktop,exo-terminal-emulator.desktop,exo-file-manager.desktop,unetbootin.desktop,gimp.desktop,qBittorrent.desktop,qalculate-gtk.desktop,smplayer.desktop
+favorites=dia.desktop,org.gnome.DiskUtility.desktop,exo-file-manager.desktop,filezilla.desktop,furiusisomount.desktop,gespeaker.desktop,libreoffice-startcenter.desktop,libreoffice-writer.desktop,exo-mail-reader.desktop,reportbug.desktop,gksu.desktop,xfce-settings-manager.desktop,skypeforlinux.desktop,software-properties-gtk.desktop,exo-terminal-emulator.desktop,unetbootin.desktop
+recent=xfce-settings-manager.desktop,unetbootin.desktop,xfce4-taskmanager.desktop,gnome-system-monitor.desktop,filezilla.desktop,org.gnome.Nautilus.desktop,disk-manager.desktop,exo-file-manager.desktop,exo-mail-reader.desktop,exo-web-browser.desktop
 button-title=Applications Menu
 button-icon=xfce4-whiskermenu
 button-single-row=false

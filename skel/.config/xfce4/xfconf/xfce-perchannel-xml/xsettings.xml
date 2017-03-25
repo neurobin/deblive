@@ -4,9 +4,9 @@
   <property name="Net" type="empty">
     <property name="ThemeName" type="string" value="Greybird"/>
     <property name="IconThemeName" type="string" value="Paper"/>
-    <property name="DoubleClickTime" type="int" value="752"/>
-    <property name="DoubleClickDistance" type="empty"/>
-    <property name="DndDragThreshold" type="int" value="22"/>
+    <property name="DoubleClickTime" type="int" value="529"/>
+    <property name="DoubleClickDistance" type="int" value="2"/>
+    <property name="DndDragThreshold" type="int" value="9"/>
     <property name="CursorBlink" type="empty"/>
     <property name="CursorBlinkTime" type="empty"/>
     <property name="SoundThemeName" type="empty"/>
